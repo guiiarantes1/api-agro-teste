@@ -21,6 +21,7 @@ class ProductListCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProductDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
     def delete(self, request, pk):
         try:
             product = Product.objects.get(pk=pk)
