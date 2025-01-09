@@ -3,13 +3,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Product
 from .serializers import ProductSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class ProductListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
-
+    
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
