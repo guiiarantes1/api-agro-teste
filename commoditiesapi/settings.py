@@ -49,6 +49,13 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+#implementacao do cache com locmem
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # Backend em memória
+        'LOCATION': 'unique-cache-location',
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
