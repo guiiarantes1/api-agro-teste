@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 from pathlib import Path
 
@@ -23,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$x6=_l3yppd05&vv%t7luldhezh-u7o@2t_i0&(#cvwpdk&nw='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",  # Origem do front-end
@@ -33,6 +35,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174", # Outras variações, se necessário
     "http://127.0.0.1:5173", # Outras variações, se necessário
 ]
+
+sentry_sdk.init(
+    dsn="https://5e7d1fb4f73a33a6f4a865589de38e8b@o4508631735599104.ingest.us.sentry.io/4508631738351616",  # Substitua pelo seu DSN
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,  # Taxa de amostragem para transações
+    send_default_pii=True    # Envia informações de PII, como usuários autenticados
+)
 
 # Application definition
 
@@ -145,3 +154,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging configuration to send errors to Sentry
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'sentry': {
+            'level': 'ERROR',  # Envia apenas erros para o Sentry
+            'class': 'sentry_sdk.integrations.logging.EventHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'sentry'],
+            'level': 'INFO',  # Registra erros e mensagens informativas
+            'propagate': True,
+        },
+    },
+}
