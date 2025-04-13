@@ -10,6 +10,7 @@ from django.core.cache import cache
 
 class ProductListCreateView(APIView):
     permission_classes = [IsAuthenticated]
+    #alteracao
 
     @method_decorator(cache_page(60 * 10))  # usando decorator para salvar a request no cache por 10 minutos
     def get(self, request):
